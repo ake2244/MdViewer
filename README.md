@@ -3,8 +3,9 @@
 *Read this in other languages: [Русский](README.ru.md)*
 
 A tiny, fast Markdown viewer for Windows with editing, printing and PDF export.
-The whole app is under 2 MB and needs nothing installed — it uses the .NET
-Framework 4.8 and the Edge WebView2 engine already built into Windows 10/11.
+**One single 1.8 MB `.exe`** — no installer, no DLLs to keep next to it: all
+dependencies are embedded. It uses the .NET Framework 4.8 and the Edge WebView2
+engine already built into Windows 10/11.
 
 ![MdViewer screenshot](docs/screenshot.png)
 
@@ -23,8 +24,8 @@ Framework 4.8 and the Edge WebView2 engine already built into Windows 10/11.
 
 ## Download
 
-Grab the latest build from the [Releases](../../releases) page — unpack
-anywhere and run `MdViewer.exe`. No installation required.
+Grab `MdViewer.exe` from the [Releases](../../releases) page, put it anywhere
+and run it. No installation, no extra files.
 
 **Requirements:** Windows 10/11 x64. Both the .NET Framework 4.8 runtime and
 the WebView2 runtime ship with Windows 11 (on older Windows 10 builds you may

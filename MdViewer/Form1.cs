@@ -236,9 +236,15 @@ window.addEventListener('drop', function (e) {
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this,
-                    "Не удалось запустить встроенный браузер (WebView2).\n\n" + ex.Message,
-                    "MdViewer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                var r = MessageBox.Show(this,
+                    "Не удалось запустить компонент отображения WebView2.\n\n" +
+                    "Обычно он входит в состав Windows 11 и свежих сборок Windows 10. " +
+                    "Если его нет, установите бесплатную среду «Microsoft Edge WebView2 Runtime».\n\n" +
+                    "Открыть страницу загрузки?\n\n" +
+                    "Техническая информация: " + ex.Message,
+                    "MdViewer", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                if (r == DialogResult.Yes)
+                    OpenInSystemBrowser("https://developer.microsoft.com/microsoft-edge/webview2/");
             }
         }
 
