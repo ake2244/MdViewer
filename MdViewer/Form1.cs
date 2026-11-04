@@ -27,6 +27,7 @@ namespace MdViewer
         private bool _dirty;
         private bool _loadingText;
         private bool _unixLineEndings;
+        private readonly float _scale; // масштаб экрана: 1.0 = 100%, 1.25 = 125%
 
         private static readonly MarkdownPipeline Pipeline =
             new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
@@ -38,8 +39,10 @@ namespace MdViewer
             Text = "MdViewer";
             try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); }
             catch { /* без иконки тоже работаем */ }
-            Width = 1000;
-            Height = 750;
+            // размеры заданы для масштаба 100% — пересчитываем под текущий
+            using (var g = Graphics.FromHwnd(IntPtr.Zero)) _scale = g.DpiX / 96f;
+            Width = (int)(1000 * _scale);
+            Height = (int)(750 * _scale);
             StartPosition = FormStartPosition.CenterScreen;
             AllowDrop = true;
             KeyPreview = true;
@@ -104,8 +107,15 @@ namespace MdViewer
             { ShortcutKeys = Keys.F1 };
             var miAbout = new ToolStripMenuItem("О программе", null, (s, e) => ShowAbout());
 
+            var miAssoc = new ToolStripMenuItem("Связать .md файлы с MdViewer", null, (s, e) => AssociateFiles());
+
             var mHelp = new ToolStripMenuItem("Справка");
-            mHelp.DropDownItems.AddRange(new ToolStripItem[] { miHelp, miAbout });
+            mHelp.DropDownItems.AddRange(new ToolStripItem[]
+            {
+                miHelp, new ToolStripSeparator(),
+                miAssoc, new ToolStripSeparator(),
+                miAbout
+            });
 
             var menu = new MenuStrip();
             menu.Items.AddRange(new ToolStripItem[] { mFile, mEdit, mHelp });
@@ -414,7 +424,7 @@ window.addEventListener('drop', function (e) {
             {
                 // просмотр -> редактирование: слева текст, справа предпросмотр
                 _split.Panel1Collapsed = false;
-                try { _split.SplitterDistance = Math.Max(200, ClientSize.Width / 2); }
+                try { _split.SplitterDistance = Math.Max((int)(200 * _scale), ClientSize.Width / 2); }
                 catch { /* окно слишком узкое — оставляем как есть */ }
                 SetDocumentActionsEnabled(true);
                 if (_mdPath == null) SetDirty(_dirty); // обновить заголовок «Новый документ»
@@ -531,12 +541,50 @@ window.addEventListener('drop', function (e) {
             }
         }
 
+        private void AssociateFiles()
+        {
+            bool alreadyDefault;
+            try
+            {
+                alreadyDefault = FileAssociation.Register();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, "Не удалось записать ассоциацию:\n" + ex.Message,
+                    "MdViewer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            const string moved =
+                "Если вы перенесёте программу в другую папку, выполните этот пункт ещё раз.";
+
+            if (alreadyDefault)
+            {
+                MessageBox.Show(this,
+                    "Файлы .md уже открываются в MdViewer по двойному клику.\n\n" +
+                    "Путь к программе обновлён. " + moved,
+                    "MdViewer", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            MessageBox.Show(this,
+                "MdViewer зарегистрирован в Windows для файлов .md и .markdown.\n\n" +
+                "Сделать программу основной Windows разрешает только вам: при следующем " +
+                "открытии .md файла может появиться окно «Выберите приложение». " +
+                "Выберите в нём MdViewer и нажмите «Всегда».\n\n" +
+                "В некоторых сборках Windows 11 MdViewer в этом окне может не появиться. " +
+                "Тогда открывайте файлы из программы: Файл → Открыть (Ctrl+O) " +
+                "или перетаскиванием в окно.\n\n" + moved,
+                "MdViewer", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
         private void ShowHelp()
         {
             MessageBox.Show(this,
                 "Открытие файла:\n" +
                 "  •  Файл → Открыть… (Ctrl+O), перетащить файл в окно\n" +
-                "     или двойной клик по .md файлу в проводнике.\n\n" +
+                "     или двойной клик по .md файлу в проводнике\n" +
+                "     (сначала: Справка → Связать .md файлы с MdViewer).\n\n" +
                 "Редактирование (Ctrl+E):\n" +
                 "  •  слева — текст как в блокноте, справа — живой предпросмотр;\n" +
                 "  •  работают Ctrl+Z (отмена), Ctrl+X/C/V, Ctrl+A;\n" +

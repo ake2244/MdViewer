@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(winget search marktext)",
+      "Bash(powershell.exe -NoProfile -Command \"Get-Content 'C:\\\\Users\\\\Andrey\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\D--Claude-marktext\\\\49d48ea9-6a0b-447c-b787-cd8db6e1e4fc\\\\tasks\\\\by6yr34dd.output' -ErrorAction SilentlyContinue\")",
+      "WebFetch(domain:github.com)",
+      "Bash(curl -s https://api.github.com/repos/marktext/marktext/releases/latest)",
+      "Bash(curl -sIL https://github.com/marktext/marktext/releases/download/v0.19.1/marktext-win-x64-0.19.1-setup.exe)",
+      "Bash(curl -sL https://github.com/marktext/marktext/releases/download/v0.19.1/SHA256SUMS.txt)",
+      "PowerShell(Start-Process -FilePath \"$env:USERPROFILE\\\\Downloads\\\\marktext-win-x64-0.19.1-setup.exe\")",
+      "Bash(curl -s \"https://api.github.com/search/code?q=Print+repo:marktext/marktext+path:src/main\")",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(gh api *)",
+      "Bash(curl -s \"https://api.github.com/repos/marktext/marktext/contents/src/main/menu\")"
+    ]
+  }
+}
