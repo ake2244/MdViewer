@@ -13,3 +13,6 @@
 
 # Release archives
 *.zip
+
+# Local Claude Code settings
+.claude/
